@@ -1,4 +1,4 @@
-# 2023-12-28 11:00
+# 2023-12-28 11:10
 name: act-build-fail2ban
 
 # Controls when the action will run. Triggers the workflow on push or pull request
@@ -17,19 +17,18 @@ on:
   workflow_dispatch:
     inputs:
       run_tests:
-        description: Run test after build
+        description: Run tests
         type: boolean
         required: true
         default: false
 
 env:
-  PRG_NAME:    "fail2ban"
-  PRG_VER:     "1.0.0"
-  TAG_NAME:    "fail2ban"
-  TAG_VERSION: "1.0.0"
-  TAG_BUILD:   "-b"
-  TAG_REF:     "0000000"
-  DEBUG_LS: yes
+  PRG_NAME:   "fail2ban"
+  PRG_VER:    "1.0.0"
+  TAG_NAME:   "fail2ban"
+  TAG_VER:    "1.0.0"
+  TAG_BUILD:  "-b"
+  TAG_REF:    "0000000"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -119,17 +118,17 @@ jobs:
         shell: bash
         run: |
           _version_=$(grep "version =" fail2ban/version.py  | awk '{print $3}' | tr -d '\"');
-          echo "PROG_VERSION=$_version_";
-          echo "PROG_VERSION=$_version_" >> $GITHUB_ENV;
-          echo "TAG_VERSION=$_version_"  >> $GITHUB_ENV;
-          echo "ARC_NAME=${{ env.TAG_NAME }}-${{ env.TAG_VERSION }}-python-${{ matrix.python-version }}.zip" >> $GITHUB_ENV;
+          echo "PRG_VER=$_version_";
+          echo "PRG_VER=$_version_" >> $GITHUB_ENV;
+          echo "TAG_VER=$_version_"  >> $GITHUB_ENV;
+          echo "ARC_NAME=${{ env.TAG_NAME }}-$_version_-python-${{ matrix.python-version }}.zip" >> $GITHUB_ENV;
 
       - name: Print program version
         shell: bash
         run: |
-          echo "PROG_VERSION=${{ env.PROG_VERSION }}";
-          echo "TAG_VERSION =${{ env.PROG_VERSION }}";
-          echo "ARC_NAME    =${{ env.ARC_NAME }}";
+          echo "PRG_VER  =${{ env.PRG_VER }}";
+          echo "TAG_VER  =${{ env.PRG_VER }}";
+          echo "ARC_NAME =${{ env.ARC_NAME }}";
 # program version end
 
 # - get ref set build begin
@@ -145,8 +144,8 @@ jobs:
           _build_=${{ env.TAG_BUILD }}-$_date_-$_ref_
           echo "TAG_REF=$_ref_"     >> $GITHUB_ENV
           echo "TAG_BUILD=$_build_" >> $GITHUB_ENV
-          echo "WORK_DIR=$(pwd)"    >> $GITHUB_ENV
           echo "TAG_DATE=$_date_"   >> $GITHUB_ENV
+          echo "WORK_DIR=$(pwd)"    >> $GITHUB_ENV
 
       - name: Print ref, build version
         shell: bash
@@ -179,7 +178,7 @@ jobs:
         continue-on-error: true
         uses: deep-soft/action-gh-release@v1
         with:
-          tag_name: ${{ env.TAG_NAME }}-${{ env.TAG_VERSION }}-${{ env.TAG_BUILD }}
+          tag_name: ${{ env.TAG_NAME }}-${{ env.TAG_VER }}-${{ env.TAG_BUILD }}
           files: |
             ${{ env.ZIP_RELEASE_ARCHIVE }}
             _tag_name_.txt
