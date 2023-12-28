@@ -16,23 +16,8 @@ on:
 #    - 'man/**'
   workflow_dispatch:
     inputs:
-      manual:
-        description: Manual run (bypass default conditions)
-        type: boolean
-        required: true
-        default: true
-      test:
+      run_tests:
         description: Run test after build
-        type: boolean
-        required: true
-        default: false
-      release_archive:
-        description: Create release archive (tar.xz)
-        type: boolean
-        required: true
-        default: true
-      build_archive:
-        description: Create build archive (tar.xz) with all files
         type: boolean
         required: true
         default: false
@@ -114,6 +99,7 @@ jobs:
           _debug '- pyinotify:' python -c 'from fail2ban.server.filterpyinotify import FilterPyinotify'
 
       - name: Test suite
+        if: ${{ inputs.run_tests }}
         run: |
           #python setup.py test
           python bin/fail2ban-testcases --verbosity=2
