@@ -1,4 +1,4 @@
-# 2023-12-28 10:10
+# 2023-12-28 11:00
 name: act-build-fail2ban
 
 # Controls when the action will run. Triggers the workflow on push or pull request
@@ -132,6 +132,30 @@ jobs:
           echo "ARC_NAME    =${{ env.ARC_NAME }}";
 # program version end
 
+# - get ref set build begin
+      - name: Get ref, set build version
+        shell: bash
+        run: |
+          _ref_all_=$(git log -1 --format='%H')
+          # _ref_=$(echo ${_ref_all_::7})
+          _date_=$(date +%Y%m%d)
+          _ref_org_=${{ env.TAG_REF }}
+          _ref_len_="${#_ref_org_}"
+          _ref_=$(echo ${_ref_all_::$_ref_len_})
+          _build_=${{ env.TAG_BUILD }}-$_date_-$_ref_
+          echo "TAG_REF=$_ref_"     >> $GITHUB_ENV
+          echo "TAG_BUILD=$_build_" >> $GITHUB_ENV
+          echo "WORK_DIR=$(pwd)"    >> $GITHUB_ENV
+          echo "TAG_DATE=$_date_"   >> $GITHUB_ENV
+
+      - name: Print ref, build version
+        shell: bash
+        run: |
+          echo "REF: ${{ env.TAG_REF }}
+          echo "BLD: ${{ env.TAG_BUILD }}
+          echo "${{ env.TAG_NAME }}-${{ env.TAG_BUILD }}" > _tag_name_.txt
+# - get ref set build end
+
 # zip release begin
       - name: Create Zip Archive Release
         uses: deep-soft/zip-release@v2
@@ -155,7 +179,8 @@ jobs:
         continue-on-error: true
         uses: deep-soft/action-gh-release@v1
         with:
-          tag_name: ${{ env.TAG_NAME }}-${{ env.TAG_VERSION }}
+          tag_name: ${{ env.TAG_NAME }}-${{ env.TAG_VERSION }}-${{ env.TAG_BUILD }}
           files: |
             ${{ env.ZIP_RELEASE_ARCHIVE }}
+            _tag_name_.txt
 # zip release end
