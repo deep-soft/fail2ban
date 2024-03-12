@@ -1,4 +1,4 @@
-# 2023-12-28 11:10
+# 2024-03-12 08:00
 name: act-build-fail2ban
 
 # Controls when the action will run. Triggers the workflow on push or pull request
@@ -157,7 +157,7 @@ jobs:
 
 # zip release begin
       - name: Create Zip Archive Release
-        uses: deep-soft/zip-release@v2
+        uses: deep-soft/zip-release@v3
         with:
           type: 'zip'
           filename: '${{ env.ARC_NAME }}'
@@ -169,14 +169,14 @@ jobs:
 
       - name: Upload zip
         continue-on-error: true
-        uses: deep-soft/upload-artifact@main
+        uses: deep-soft/upload-artifact@v4
         with:
           name: '${{ env.ARC_NAME }}'
           path: '${{ env.ZIP_RELEASE_ARCHIVE }}'
 
       - name: Publish
         continue-on-error: true
-        uses: deep-soft/action-gh-release@v1
+        uses: deep-soft/action-gh-release@v2.1
         with:
           tag_name: ${{ env.TAG_NAME }}-${{ env.TAG_VER }}-${{ env.TAG_BUILD }}
           files: |
