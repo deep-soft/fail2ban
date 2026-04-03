@@ -40,7 +40,13 @@ ver. 1.1.1-dev-1 (20??/??/??) - development nightly edition
   - postfix backend switched to `systemd` (gh-3527)
 * `action.d/firewallcmd-ipset.conf`:
   - rename `ipsettype` to `ipsetbackend` (gh-2620), parameter `ipsettype` will be used now to the real set type (gh-3760)
+* `action.d/nftables.conf`:
+  - action fixed for SELinux without execmem permission, rewrite capturing with `grep -P` using `grep -E` or `sed`
+    (PCRE-JIT by `grep -P` may cause SELinux denial for execmem, see gh-4137)
 * `action.d/xarf-login-attack.conf` - ignore errors or warnings in output of `dig` provided as comment (gh-4068)
+* `filter.d/apache-badbots.conf`, `filter.d/apache-fakegooglebot.conf`:
+  - regexs rewritten more strict (removed catch-alls, etc);
+  - regexs fixed to match lines with vhost in accesslog (gh-1594)
 * `filter.d/apache-noscript.conf` - consider new log-format with "AH02811: stderr from /..." (gh-3900)
 * `filter.d/apache-overflows.conf` - consider AH10244: invalid URI path (gh-3778, gh-3900)
 * `filter.d/asterisk.conf` - fixed RE for "no matching endpoint" with retry info (like `after X tries in Y ms`) at end, 
@@ -92,6 +98,7 @@ ver. 1.1.1-dev-1 (20??/??/??) - development nightly edition
   by first ban (and automatically reloaded by update after small latency to avoid expensive stats check on every compare);
   the entries inside the file can be separated by comma, space or new line with optional comments (text following chars
   `#` or `;` after space or newline would be ignored up to next newline)
+* `action.d/apprise.conf` - updated to support tagging and other command line args (gh-4141)
 * `action.d/*-ipset.conf`:
   - parameter `ipsettype` to set type of ipset, e. g. hash:ip, hash:net, etc (gh-3760)
 * `action.d/iptables.conf` - action and few derivatives of it extended to handle multiple chains,
@@ -108,11 +115,13 @@ ver. 1.1.1-dev-1 (20??/??/??) - development nightly edition
 * `filter.d/nginx-http-auth.conf`:
   - extended with `prefregex` to capture content of error only (bypass common prefix and suffix, like server, request, host, referrer);
   - extended to match PAM authentication failures (gh-4071)
+  - modes `fallback` and `aggressive` extended to match more SSL failures by SSL_do_handshake or SSL_read (gh-4142, gh-2881)
 * `filter.d/nginx-limit-req.conf` - extended to ban hosts failed by limit connection in ngx_http_limit_conn_module (gh-3674, gh-4047)
 * `filter.d/proxmox.conf` - add support to Proxmox Web GUI (gh-2966)
 * `filter.d/openvpn.conf` - new filter and jail for openvpn recognizing failed TLS handshakes (gh-2702)
 * `filter.d/sendmail-reject.conf` - also recognize "Domain of sender address ... does not resolve" (gh-4035)
 * `filter.d/vaultwarden.conf` - new filter and jail for Vaultwarden (gh-3979)
+* `filter.d/xrdp.conf` - new filter for XRDP, an open source RDP server (gh-3254)
 * `fail2ban-regex` extended with new option `-i` or `--invert` to output not-matched lines by `-o` or `--out` (gh-4001)
 
 
