@@ -348,6 +348,9 @@ Jun  6 04:17:04 host sshd[1189074]: Invalid user  from 192.0.2.68 port 34916
 # failJSON: { "time": "2005-06-06T04:17:09", "match": true , "host": "192.0.2.68", "dns": null, "user": "", "desc": "empty user, gh-2749" }
 Jun  6 04:17:09 host sshd[1189074]: Connection closed by invalid user  192.0.2.68 port 34916 [preauth]
 
+# failJSON: { "time": "2005-06-06T04:17:10", "match": true , "host": "192.0.2.77", "dns": null, "user": "x 192.0.2.1 on", "desc": "Injecting on username 'x 192.0.2.1 on'" }
+Jun  6 04:17:10 host sshd[1189075]: Connection closed by invalid user x 192.0.2.1 on 192.0.2.77 port 4444 [preauth]
+
 # failJSON: { "match": false, "desc": "ddos-failure without IP, retarded, must be triggered with next (closed) message, gh-3086"}
 Jun  7 04:10:35 host sshd[424228]: error: kex_exchange_identification: Connection closed by remote host
 # failJSON: { "time": "2005-06-07T04:10:35", "match": true , "host": "192.0.2.15", "desc": "kex_exchange_identification: Connection closed, gh-3086" }
@@ -413,5 +416,12 @@ Nov 26 16:47:51 srv sshd[19320]: Disconnected from authenticating user root 192.
 
 # failJSON: { "time": "2019-07-08T23:40:17", "match": true , "host": "192.0.2.2", "desc": "RFC 5424 format with extra data and brackets in value (gh-2309)" }
 <38>1 2019-07-08T17:40:17.954167-04:00 hostname.example.com sshd 55555 - [timeQuality tzKnown="1" isSynced="0"][xxx@123 test="[brackets]"] Failed unknown for invalid user redmond from 192.0.2.2 port 55555 ssh2
+
+# failJSON: { "match": false , "desc": "RFC 5424 format, injection attempt on STRUCTURED-DATA field (GHSA-c2mg-2r7g-c3wp)" }
+<38>1 2019-07-08T17:40:17.954169-04:00 hostname.example.com sshd 12345 123 [AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+# failJSON: { "match": false , "desc": "RFC 5424 format, injection attempt on STRUCTURED-DATA 2nd field (GHSA-c2mg-2r7g-c3wp)" }
+<38>1 2019-07-08T17:40:17.954170-04:00 hostname.example.com sshd 12345 123 [AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA][BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+# failJSON: { "match": false , "desc": "RFC 5424 format, injection attempt on STRUCTURED-DATA, unescaped new-line in PARAM-VALUE (GHSA-c2mg-2r7g-c3wp)" }
+<38>1 2019-07-08T17:40:17.954171-04:00 hostname.example.com sshd 12345 123 [AAAAAAAAAAAAAAAAAAAAAAAAAA XXX="CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 # addFILE: "sshd-journal"

@@ -139,6 +139,40 @@ Aug 29 03:53:52 server dovecot: submission-login: Remote closed connection (auth
 # failJSON: { "time": "2004-08-29T15:33:53", "match": true , "host": "192.0.2.100" }
 Aug 29 15:33:53 server dovecot: managesieve-login: Disconnected: Too many invalid commands. (auth failed, 1 attempts in 2 secs): user=<myself>, method=PLAIN, rip=192.0.2.100, lip=0.0.0.0, TLS, TLSv1.3 with cipher TLS_CHACHA20_POLY1305_SHA256 (256/256 bits)
 
+# failJSON: { "time": "2004-08-30T00:10:57", "match": true , "host": "192.0.2.110", "desc": "password mismatch from sql backend/driver of dovecot 2.4, gh-4196" }
+Aug 30 00:10:57 auth(info@example.com,192.0.2.110,sasl:login)<CvN+E95Uf4e7eEnj>: Info: sql: Password mismatch (given password: XxxxXXxx123)
+# failJSON: { "time": "2004-08-30T00:11:05", "match": true , "host": "192.0.2.110", "desc": "closed after 3 attempts (password mismatch), gh-4196" }
+Aug 30 00:11:05 imap-login: Info: Login aborted: Connection closed (auth failed, 3 attempts in 16 secs) (auth_failed): user=<info@example.com>, method=PLAIN, rip=192.0.2.110, lip=0.0.0.0, TLS, session=<CvN+E95Uf4e7eEnj>
+
+# IMAP login. There is one auth-worker line per attempt, carrying <pid><session>, plus one pam_unix line per attempt. Then there is a single imap-login line per connection, covering all of its attempts
+# failJSON: { "time": "2004-08-30T09:48:53", "match": true , "host": "192.0.2.50", "desc": "dovecot 2.4, IMAP login, <pid><session> in prefix (continuation of gh-4196)" }
+Aug 30 09:48:53 host dovecot[2623853]: auth-worker(eric,192.0.2.50)<566595><SESSION2>: request [3]: pam: pam_authenticate() failed: Authentication failure (Password mismatch?)
+# failJSON: { "match": false , "desc": "don't match to avoid double counting (also rather pam-generic thing)" }
+Aug 30 09:48:53 host auth[566595]: pam_unix(dovecot-mail:auth): authentication failure; logname= uid=0 euid=0 tty=dovecot ruser=eric rhost=192.0.2.50
+# failJSON: { "time": "2004-08-30T09:49:01", "match": true , "host": "192.0.2.50", "desc": "dovecot 2.4, IMAP login, <pid><session> in prefix (continuation of gh-4196)" }
+Aug 30 09:49:01 host dovecot[2623853]: auth-worker(eric,192.0.2.50)<566595><SESSION2>: request [4]: pam: pam_authenticate() failed: Authentication failure (Password mismatch?)
+# failJSON: { "match": false , "desc": "don't match to avoid double counting (also rather pam-generic thing)" }
+Aug 30 09:49:01 host auth[566595]: pam_unix(dovecot-mail:auth): authentication failure; logname= uid=0 euid=0 tty=dovecot ruser=eric rhost=192.0.2.50
+# failJSON: { "time": "2004-08-30T09:49:08", "match": true , "host": "192.0.2.50", "desc": "dovecot 2.4, IMAP login, <pid><session> in prefix (continuation of gh-4196)" }
+Aug 30 09:49:08 host dovecot[2623853]: auth-worker(eric,192.0.2.50)<566595><SESSION2>: request [5]: pam: pam_authenticate() failed: Authentication failure (Password mismatch?)
+# failJSON: { "match": false , "desc": "don't match to avoid double counting (also rather pam-generic thing)" }
+Aug 30 09:49:08 host auth[566595]: pam_unix(dovecot-mail:auth): authentication failure; logname= uid=0 euid=0 tty=dovecot ruser=eric rhost=192.0.2.50
+# failJSON: { "time": "2004-08-30T09:51:49", "match": true , "host": "192.0.2.50", "desc": "dovecot 2.4, summary line after 3 failed attempts (continuation of gh-4196)" }
+Aug 30 09:51:49 host dovecot[2623853]: imap-login: Login aborted: Inactivity (auth failed, 3 attempts in 177 secs) (auth_failed): user=<eric>, method=PLAIN, rip=192.0.2.50, lip=193.24.208.184, TLS, session=<SESSION2>
+
+# SMTP AUTH through Postfix (Dovecot's auth socket, so there is no login process). Here the auth-worker line arrives alone from Dovecot's side, with no session ID and no imap-login line:
+# failJSON: { "match": false , "desc": "don't match to avoid double counting (also rather pam-generic thing)" }
+Aug 30 08:42:47 host auth[3499329]: pam_unix(dovecot-mail:auth): authentication failure; logname= uid=0 euid=0 tty=dovecot ruser=eric rhost=192.0.2.60
+# failJSON: { "time": "2004-08-30T08:42:47", "match": true , "host": "192.0.2.60", "desc": "dovecot 2.4, SMTP AUTH through Postfix (continuation of gh-4196)" }
+Aug 30 08:42:47 host dovecot[2623853]: auth-worker(eric,192.0.2.60)<3499329>: request [1]: pam: pam_authenticate() failed: Authentication failure (Password mismatch?)
+# failJSON: { "match": false , "desc": "don't match to avoid double counting" }
+Aug 30 08:42:49 host postfix/submission/smtpd[3497874]: warning: unknown[192.0.2.60]: SASL LOGIN authentication failed: (reason unavailable), sasl_username=eric
+
+# failJSON: { "time": "2004-08-31T16:06:05", "match": true , "host": "192.0.2.111", "desc": "GHSA-33wh-ccjc-p397, positive case (match, no hangs)" }
+Aug 31 16:06:05 s166-62-100-187 dovecot: imap-login: Disconnected: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: (reason: some unknown reason) (tried to use disallowed test auth): user=<>, rip=192.0.2.111
+# failJSON: { "match": false , "desc": "GHSA-33wh-ccjc-p397, negative case (bypass, no hangs)" }
+Aug 31 16:06:06 s166-62-100-187 dovecot: imap-login: Disconnected: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: a: test no match
+
 # ---------------------------------------
 # Test-cases of aggressive mode:
 # ---------------------------------------

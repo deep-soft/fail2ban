@@ -17,7 +17,11 @@ Jul 19 18:11:26 srv2 vsftpd: pam_unix(vsftpd:auth): authentication failure; logn
 Jul 19 18:11:26 srv2 vsftpd: pam_unix: authentication failure; logname= uid=0 euid=0 tty=ftp ruser=an8767 rhost=www.google.com
 
 
-# failJSON: { "time": "2005-07-19T18:11:50", "match": true , "host": "192.0.2.1", "user": "test rhost=192.0.2.151", "desc": "Injecting on username"}
-Jul 19 18:11:50 srv2 daemon: pam_unix(auth): authentication failure; logname= uid=0 euid=0 tty=xxx ruser=test rhost=192.0.2.151 rhost=192.0.2.1
-# failJSON: { "time": "2005-07-19T18:11:52", "match": true , "host": "192.0.2.2", "user": "test rhost=192.0.2.152", "desc": "Injecting on username after host"}
-Jul 19 18:11:52 srv2 daemon: pam_unix(auth): authentication failure; logname= uid=0 euid=0 tty=xxx ruser= rhost=192.0.2.2 user=test rhost=192.0.2.152
+# failJSON: { "time": "2005-07-19T18:11:50", "match": true , "host": "192.0.2.200", "user": "test rhost=192.0.2.100", "desc": "Injecting on username"}
+Jul 19 18:11:50 srv2 daemon: pam_unix(auth): authentication failure; logname= uid=0 euid=0 tty=xxx ruser=test rhost=192.0.2.100 rhost=192.0.2.200
+# failJSON: { "time": "2005-07-19T18:11:52", "match": true , "host": "192.0.2.201", "user": " rhost=192.0.2.101 user=test", "desc": "Attempt to inject on username after host (prefer injection on the `ruser` field over the `user` field)"}
+Jul 19 18:11:52 srv2 daemon: pam_unix(auth): authentication failure; logname= uid=0 euid=0 tty=xxx ruser= rhost=192.0.2.101 user=test rhost=192.0.2.201
+# failJSON: { "time": "2005-07-19T18:11:54", "match": true , "host": "192.0.2.202", "user": "a rhost=192.0.2.102 user=a rhost=192.0.2.103 user=a", "desc": "Attempt to inject on username for both sides (prefer injection on the `ruser` field over the `user` field)"}
+Jul 19 18:11:54 host auth[4242]: pam_unix(someservice:auth): authentication failure; logname= uid=0 euid=0 tty=someservice ruser=a rhost=192.0.2.102 user=a rhost=192.0.2.103 user=a rhost=192.0.2.202 user=
+# failJSON: { "time": "2005-07-19T18:11:54", "match": true , "host": "192.0.2.202", "user": "a rhost=192.0.2.102 user=a rhost=192.0.2.103 user=a", "desc": "Attempt to inject on username for both sides (prefer injection on the `ruser` field over the `user` field), user not logged at all"}
+Jul 19 18:11:54 host auth[4242]: pam_unix(someservice:auth): authentication failure; logname= uid=0 euid=0 tty=someservice ruser=a rhost=192.0.2.102 user=a rhost=192.0.2.103 user=a rhost=192.0.2.202
